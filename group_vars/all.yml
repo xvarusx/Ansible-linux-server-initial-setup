@@ -1,0 +1,23 @@
+ansible_user: root
+devops_user: devops
+essential_packages:
+  - curl
+  - wget
+  - vim
+  - git
+  - htop
+  - tree
+  - unzip
+  - jq
+  - ca-certificates
+  - software-properties-common
+  - apt-transport-https
+  - gnupg
+  - lsb-release
+  - python3
+  - python3-pip
+  - ufw
+  - fail2ban
+timezone: "UTC"
+ssh_authorized_keys:
+  - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHDV00lwuLMO28Q8qEv3G4lVNAbKM1dWwdqQjHS6571+ oussema@lenovo"

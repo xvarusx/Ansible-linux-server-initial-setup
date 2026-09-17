@@ -1,0 +1,87 @@
+- name: Boostrap linux server
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Ensure system is up to date
+      ansible.builtin.apt:
+        update_cache: true
+        upgrade: dist
+        cache_valid_time: 3600
+      tags: [packges, system]
+
+    - name: Install essential packages
+      ansible.builtin.apt:
+        name: "{{ essential_packages }}"
+        state: present
+      tags: [packges, system]
+
+    - name: create devops user
+      ansible.builtin.user:
+        name: "{{ devops_user }}"
+        groups: sudo
+        append: true
+        shell: /bin/bash
+        create_home: true
+      tags: [user]
+
+    - name: Allow passwordless sudo for devops user
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/{{ devop_user }}
+        line: "{{ devops_user }} ALL=(ALL) NOPASSWD:ALL"
+        create: true
+        mode: "0440"
+        validate: "visudo -cf %s"
+      tags: [users, security]
+
+    - name: Deploy SSH authorized keys for devops user
+      ansible.posix.authorized_key:
+        user: "{{ devops_user }}"
+        key: "{{ item }}"
+        state: present
+      loop: "{{ ssh_authorized_keys }}"
+      when: ssh_authorized_keys | length > 0
+      tags: [users, security]
+
+    - name: Configure UFW - default deny incoming
+      community.general.ufw:
+        direction: incoming
+        policy: deny
+      tags: [security, firewall]
+
+    - name: Configure UFW - default allow outgoing
+      community.general.ufw:
+        direction: outgoing
+        policy: allow
+      tags: [security, firewall]
+
+    - name: Allow SSH through UFW
+      community.general.ufw:
+        rule: allow
+        port: "22"
+        proto: tcp
+      tags: [security, firewall]
+
+    - name: Enable UFW
+      community.general.ufw:
+        state: enabled
+      tags: [security, firewall]
+
+    - name: Ensure fail2ban is enabled and started
+      ansible.builtin.service:
+        name: fail2ban
+        state: started
+        enabled: true
+      tags: [security]
+
+    - name: Create useful directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ devops_user }}"
+        group: "{{ devops_user }}"
+        mode: "0755"
+      loop:
+        - "/home/{{ devops_user }}/bin"
+        - "/opt/apps"
+      tags: [users]
