@@ -7,17 +7,17 @@ Ansible playbook that automatically configures a fresh Ubuntu or Debian server.
 Full bootstrap
 
 ```bash
-  ansible-playbook requirements.yml
+  ansible-playbook bootstrap.yml
 ```
 
 Only packages
 
 ```bash
-  ansible-playbook requirements.yml --tags packages
+  ansible-playbook bootstrap.yml --tags packages
 ```
 
 Only security hardening
 
 ```bash
-  ansible-playbook requirements.yml --tags security
+  ansible-playbook bootstrap.yml --tags security
 ```
