@@ -16,7 +16,7 @@
         state: present
       tags: [packages, system]
 
-    - name: create devops user
+    - name: Create devops user
       ansible.builtin.user:
         name: "{{ devops_user }}"
         groups: sudo
@@ -26,13 +26,17 @@
       tags: [user]
 
     - name: Allow passwordless sudo for devops user
-      ansible.builtin.lineinfile:
-        path: /etc/sudoers.d/{{ devop_user }}
-        line: "{{ devops_user }} ALL=(ALL) NOPASSWD:ALL"
-        create: true
+      ansible.builtin.template:
+        src: devops-sudoers.j2
+        owner: root
+        groop: root
         mode: "0440"
         validate: "visudo -cf %s"
       tags: [users, security]
+    - name: Set system timezone
+      community.general.timezone:
+        name: "{{ timezone }}"
+      tags: [system]
 
     - name: Deploy SSH authorized keys for devops user
       ansible.posix.authorized_key:
@@ -58,7 +62,7 @@
     - name: Allow SSH through UFW
       community.general.ufw:
         rule: allow
-        port: "22"
+        port: "{{ ssh_port | string }}"
         proto: tcp
       tags: [security, firewall]
 
