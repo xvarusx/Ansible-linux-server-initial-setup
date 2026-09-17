@@ -32,7 +32,7 @@ jobs:
       - name: Install Ansible Collections
         run: |
           ansible-galaxy collection install \
-            -r bootstrap.yml
+            -r requirements.yml
 
       - name: Run Ansible Lint
         run: |
