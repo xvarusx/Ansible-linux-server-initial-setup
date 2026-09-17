@@ -25,14 +25,25 @@
         create_home: true
       tags: [user]
 
-    - name: Allow passwordless sudo for devops user
-      ansible.builtin.template:
-        src: devops-sudoers.j2
+    - name: Create sudoers.d directory
+      ansible.builtin.file:
+        path: /etc/sudoers.d
+        state: directory
         owner: root
-        groop: root
-        mode: "0440"
-        validate: "visudo -cf %s"
+        group: root
+        mode: "0755"
       tags: [users, security]
+
+    - name: Allow Passwordless Sudo for DevOps User
+      ansible.builtin.template:
+        src: templates/devops-sudoers.j2
+        dest: "/etc/sudoers.d/{{ devops_user }}"
+        owner: root
+        group: root
+        mode: "0440"
+        validate: "/usr/sbin/visudo -cf %s"
+      tags: [users, security]
+
     - name: Set system timezone
       community.general.timezone:
         name: "{{ timezone }}"
