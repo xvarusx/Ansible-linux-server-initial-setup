@@ -1,5 +1,6 @@
 ansible_user: root
 devops_user: devops
+ssh_port: 22
 essential_packages:
   - curl
   - wget

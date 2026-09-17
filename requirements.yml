@@ -8,13 +8,13 @@
         update_cache: true
         upgrade: dist
         cache_valid_time: 3600
-      tags: [packges, system]
+      tags: [packages, system]
 
     - name: Install essential packages
       ansible.builtin.apt:
         name: "{{ essential_packages }}"
         state: present
-      tags: [packges, system]
+      tags: [packages, system]
 
     - name: create devops user
       ansible.builtin.user:
